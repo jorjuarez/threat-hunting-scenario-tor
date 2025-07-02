@@ -37,45 +37,62 @@
 
 ## Related Queries:
 ```kql
-// Installer name == tor-browser-windows-x86_64-portable-(version).exe
-// Detect the installer being downloaded
+Appendix: KQL Queries
+
+
+Appendix A: Initial Discovery Query for a Target Host
+
+
+let target_device = "z-travelagent";
+let target_terms = dynamic(["tor", "firefox"]);
 DeviceFileEvents
-| where FileName startswith "tor"
+| where TimeGenerated between (datetime(2025-06-24T20:01:23.612868Z) .. datetime(2025-06-24T20:30:03.9246195Z)) //2025-06-24 3:01:23 PM CDT and 2025-06-24 3:30:03 PM CDT
+| where DeviceName == target_device
+| where InitiatingProcessCommandLine has_any (target_terms) or FileName has_any (target_terms)
+| project TimeGenerated, DeviceName, AdditionalFields, FileName, FolderPath, InitiatingProcessCommandLine, InitiatingProcessFileName, InitiatingProcessParentFileName, SHA256
+| sort by TimeGenerated asc
 
-// TOR Browser being silently installed
-// Take note of two spaces before the /S (I don't know why)
+Appendix B: Process Analysis Query (Confirming Manual Launch on Host)
+
+let target_device = "z-travelagent";
 DeviceProcessEvents
-| where ProcessCommandLine contains "tor-browser-windows-x86_64-portable-14.0.1.exe  /S"
-| project Timestamp, DeviceName, ActionType, FileName, ProcessCommandLine
+| where TimeGenerated >= datetime(2025-06-24T20:03:20.0014546Z) // 2025-06-24 3:03:20 PM CDT
+| where DeviceName == target_device
+| where FileName has "tor-browser-windows"
+| where InitiatingProcessFileName =~ "cmd.exe"
+| project TimeGenerated, FileName, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessParentFileName
 
-// TOR Browser or service was successfully installed and is present on the disk
-DeviceFileEvents
-| where FileName has_any ("tor.exe", "firefox.exe")
-| project  Timestamp, DeviceName, RequestAccountName, ActionType, InitiatingProcessCommandLine
+Appendix C: Network Reconstruction Query (Single Host)
 
-// TOR Browser or service was launched
-DeviceProcessEvents
-| where ProcessCommandLine has_any("tor.exe","firefox.exe")
-| project  Timestamp, DeviceName, AccountName, ActionType, ProcessCommandLine
-
-// TOR Browser or service is being used and is actively creating network connections
+let target_device = "z-travelagent";
+let target_terms = dynamic(["tor", "firefox"]);
 DeviceNetworkEvents
-| where InitiatingProcessFileName in~ ("tor.exe", "firefox.exe")
-| where RemotePort in (9001, 9030, 9040, 9050, 9051, 9150)
-| project Timestamp, DeviceName, InitiatingProcessAccountName, InitiatingProcessFileName, RemoteIP, RemotePort, RemoteUrl
-| order by Timestamp desc
+| where TimeGenerated between (todatetime('2025-06-24T20:03:54.6867011Z') .. todatetime('2025-06-24T20:31:07.7209084Z'))
+| where DeviceName == target_device
+| where InitiatingProcessCommandLine has_any (target_terms)
+| project TimeGenerated, DeviceName, ActionType, RemoteIP, RemoteUrl,LocalPort ,RemotePort, InitiatingProcessFileName, InitiatingProcessCommandLine
+| sort by TimeGenerated asc
 
-// User shopping list was created and, changed, or deleted
+Appendix D: Content Analysis Query (Tor Shopping List File)
+
+let target_device = "z-travelagent";
+let target_files = dynamic(["tor-shopping-list.txt", "tor-shopping-list.lnk"]);
 DeviceFileEvents
-| where FileName contains "shopping-list.txt"
+| where TimeGenerated between (datetime(2025-06-24T20:28:46.000Z) .. datetime(2025-06-24T20:28:47.000Z)) // Central Time: 2025-06-24 3:28:46 PM CDT
+| where DeviceName == target_device
+| where FileName has_any (target_files)
+| project TimeGenerated, DeviceName, FileName, FolderPath, InitiatingProcessCommandLine, InitiatingProcessFileName, InitiatingProcessParentFileName,AdditionalFields, SHA256
+| sort by TimeGenerated asc
+
+
 ```
 
 ---
 
 ## Created By:
-- **Author Name**: Josh Madakor
-- **Author Contact**: https://www.linkedin.com/in/joshmadakor/
-- **Date**: August 31, 2024
+- **Author Name**: Jorge Juarez
+- **Author Contact**: https://www.linkedin.com/in/jorgejuarez1/
+- **Date**: July 1, 2025
 
 ## Validated By:
 - **Reviewer Name**: 
@@ -92,4 +109,4 @@ DeviceFileEvents
 ## Revision History:
 | **Version** | **Changes**                   | **Date**         | **Modified By**   |
 |-------------|-------------------------------|------------------|-------------------|
-| 1.0         | Initial draft                  | `September  6, 2024`  | `Josh Madakor`   
+| 1.0         | Initial draft                  | `July 1, 2025`  | `Jorge Juarez`   
