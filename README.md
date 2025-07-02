@@ -25,7 +25,7 @@ Management suspects that some employees may be using TOR browsers to bypass netw
 
 ### 1. Searched the `DeviceFileEvents` Table
 
-**Initial Discovery -** An investigation was initiated to address concerns about unauthorized Tor usage. Used the following KQL query to hunt for file events related to "tor" or "firefox," which led to the initial discovery on z-travelagent  (see Appendix A).
+**Initial Discovery -** An investigation was initiated to address concerns about unauthorized TOR usage. Used the following KQL query to hunt for file events related to "tor" or "firefox," which led to the initial discovery on z-travelagent  (see Appendix A).
 
 **Query used to locate events - Appendix A:**
 
@@ -45,7 +45,7 @@ DeviceFileEvents
 
 ### 2. Searched the `DeviceProcessEvents` Table
 
-**Process Tree Analysis -** The process execution history on z-travelagent was analyzed to determine the origin of the Tor installation. This confirmed the installer was launched by the Command Prompt (cmd.exe), which was manually launched by the user (see Appendix B).
+**Process Tree Analysis -** The process execution history on z-travelagent was analyzed to determine the origin of the TOR installation. This confirmed the installer was launched by the Command Prompt (cmd.exe), which was manually launched by the user (see Appendix B).
 
 **Query used to locate event - Appendix B**
 
@@ -66,7 +66,7 @@ DeviceProcessEvents
 
 ### 3. Searched the `DeviceNetworkEvents` Table
 
-**Network Event Reconstruction -** A focused query was used to reconstruct the timeline of all network activity from the Tor Browser on z-travelagent , verifying successful connections to the C2-like domains (see Appendix C).
+**Network Event Reconstruction -** A focused query was used to reconstruct the timeline of all network activity from the TOR Browser on z-travelagent , verifying successful connections to the C2-like domains (see Appendix C).
 
 **Query used to locate events - Appendix C**
 
@@ -118,11 +118,11 @@ DeviceFileEvents
 
 ### 3. TOR Browser First Launch
 
-- **June 24, 2025**, 3:03:54 PM CST (UTC: 20:03:54.6867011Z): The Tor Browser application **(firefox.exe)** was launched for the first time.
+- **June 24, 2025**, 3:03:54 PM CST (UTC: 20:03:54.6867011Z): The TOR Browser application **(firefox.exe)** was launched for the first time.
 
 ### 4. TOR Browser Suspicious Network Connections
 
-- **June 24, 2025**, 3:04:13 PM CST (onward) (UTC: from 20:04:13.000Z): The Tor Browser initiated connections to suspicious, DGA-like domains, specifically **www[.]77yi3yrudvnyxnxc42fdsnm[.]com** and **www[.]sucamq2[.]com**.
+- **June 24, 2025**, 3:04:13 PM CST (onward) (UTC: from 20:04:13.000Z): The TOR Browser initiated connections to suspicious, DGA-like domains, specifically **www[.]77yi3yrudvnyxnxc42fdsnm[.]com** and **www[.]sucamq2[.]com**.
 
 ### 5. Suspicious File Creation - **'tor-shopping-list.txt'**
 
@@ -132,7 +132,7 @@ DeviceFileEvents
 
 ## Summary
 
-The investigation confirmed unauthorized Tor Browser installation and use by "Analyst1" on workstation "z-travelagent". Evidence indicates deliberate, manual installation via the command line and subsequent use for connections to suspicious, C2-like domains. This constituted a high-priority security incident, which led to the immediate isolation of "z-travelagent" from the network.
+The investigation confirmed unauthorized TOR Browser installation and use by "Analyst1" on workstation "z-travelagent". Evidence indicates deliberate, manual installation via the command line and subsequent use for connections to suspicious, C2-like domains. This constituted a high-priority security incident, which led to the immediate isolation of "z-travelagent" from the network.
 
 ---
 
